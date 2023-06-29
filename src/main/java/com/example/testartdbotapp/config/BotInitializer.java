@@ -1,6 +1,6 @@
 package com.example.testartdbotapp.config;
 
-import com.example.testartdbotapp.service.Bot;
+import com.example.testartdbotapp.controller.Bot;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;

@@ -1,4 +1,4 @@
-package com.example.testartdbotapp.service;
+package com.example.testartdbotapp.controller;
 
 public class BotInterface {
 

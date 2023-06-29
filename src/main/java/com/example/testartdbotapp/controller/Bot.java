@@ -1,11 +1,14 @@
-package com.example.testartdbotapp.service;
+package com.example.testartdbotapp.controller;
 
 import com.example.testartdbotapp.config.BotConfig;
+import com.example.testartdbotapp.repository.UserRepository;
+import com.example.testartdbotapp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
@@ -19,6 +22,7 @@ import java.util.List;
 public class Bot extends TelegramLongPollingBot {
 
     private final BotConfig botConfig;
+    private final UserService userService;
 
     @Override
     public void onRegister() {
@@ -41,14 +45,19 @@ public class Bot extends TelegramLongPollingBot {
         if(update.hasMessage() && update.getMessage().hasText()) {
             String inputMessage = update.getMessage().getText();
             Long chatId = update.getMessage().getChatId();
+            Chat chat = update.getMessage().getChat();
             String userName = update.getMessage().getChat().getFirstName();
-            String messageText = "Здравствуйте, " + userName + ". Рады Вас видеть!";
             switch (inputMessage) {
                 case "/start":
+                    userService.checkUser(chatId);
+                    String messageText = "Здравствуйте, " + userName + ". Рады Вас видеть!";
                     sendMessageBot(chatId, messageText);
                     break;
                 case "/help":
                     sendMessageBot(chatId, BotInterface.BOT_TEXT_HELP);
+                    break;
+                case "/info":
+                    sendMessageBot(chatId, userService.getUserInfo(chatId, chat));
                     break;
                 default:
                     sendMessageBot(chatId, "Неверна введена команда.");
