@@ -2,6 +2,7 @@ package com.example.testartdbotapp.service;
 
 import com.example.testartdbotapp.model.Receipt;
 import com.example.testartdbotapp.model.User;
+import com.example.testartdbotapp.repository.ReceiptsRepository;
 import com.example.testartdbotapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,9 +16,10 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class UserService {
+public class BotService {
 
     private final UserRepository userRepository;
+    private final ReceiptsRepository receiptsRepository;
 
     private Optional<User> getUserByChatId(Long chatId) {
         return userRepository.findByChatId(chatId);
@@ -36,6 +38,16 @@ public class UserService {
             user.get().setLastVisitTime(LocalDateTime.now());
             userRepository.save(user.get());
         }
+    }
+
+    public void saveReceipts(Long chatId, Long value) {
+        User user = getUserByChatId(chatId).orElseThrow();
+        Receipt receipt = Receipt.builder()
+                .user(user)
+                .value(value)
+                .date(LocalDateTime.now())
+                .build();
+        receiptsRepository.save(receipt);
     }
 
     public String getUserInfo(Long chatId, Chat chat) {

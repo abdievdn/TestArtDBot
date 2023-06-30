@@ -1,8 +1,7 @@
 package com.example.testartdbotapp.controller;
 
 import com.example.testartdbotapp.config.BotConfig;
-import com.example.testartdbotapp.service.ReceiptService;
-import com.example.testartdbotapp.service.UserService;
+import com.example.testartdbotapp.service.BotService;
 import com.vdurmont.emoji.EmojiParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +27,7 @@ import static com.example.testartdbotapp.controller.BotInterface.EXPENSES_SHOW_B
 public class Bot extends TelegramLongPollingBot {
 
     private final BotConfig botConfig;
-    private final UserService userService;
-    private final ReceiptService receiptService;
+    private final BotService botService;
     private String callBackData;
 
     @Override
@@ -58,7 +56,7 @@ public class Bot extends TelegramLongPollingBot {
                     case RECEIPTS_INPUT_BUTTON:
                         try {
                             Long value = Long.parseLong(text);
-                            receiptService.saveReceipts(value);
+                            botService.saveReceipts(chatId, value);
                             sendBotMessage(chatId, "Значение успешно сохранено");
                         } catch (Exception e) {
                             sendBotMessage(chatId, "Неверно введено значение!");
@@ -69,7 +67,7 @@ public class Bot extends TelegramLongPollingBot {
                         try {
                             Integer year = Integer.parseInt(dateValues[0]);
                             Integer month = Integer.parseInt(dateValues[1]);
-                            Long receiptValue = userService.showReceiptValue(chatId, year, month);
+                            Long receiptValue = botService.showReceiptValue(chatId, year, month);
                             sendBotMessage(chatId, "Приход за " + month + " месяц " +
                                     year + " год составляет " + receiptValue);
                         } catch (Exception e) {
@@ -84,7 +82,7 @@ public class Bot extends TelegramLongPollingBot {
                 String userName = update.getMessage().getChat().getFirstName();
                 switch (inputMessage) {
                     case "/start":
-                        userService.checkUser(chatId);
+                        botService.checkUser(chatId);
                         String messageText = EmojiParser.parseToUnicode("Здравствуйте, " + userName + ". Рады Вас видеть! " + ":blush:");
                         sendBotMessage(chatId, messageText);
                         break;
@@ -92,7 +90,7 @@ public class Bot extends TelegramLongPollingBot {
                         sendBotMessage(chatId, BOT_TEXT_HELP);
                         break;
                     case "/info":
-                        sendBotMessage(chatId, userService.getUserInfo(chatId, chat));
+                        sendBotMessage(chatId, botService.getUserInfo(chatId, chat));
                         break;
                     case "/input":
                         SendMessage messageInputText = new SendMessage();

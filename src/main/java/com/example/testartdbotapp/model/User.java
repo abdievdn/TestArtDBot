@@ -26,6 +26,6 @@ public class User {
 
     private LocalDateTime lastVisitTime;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Receipt> receipts;
 }
